@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Artisan Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUix4R-Ur4sU-ykqdNK-74Va2rfreLHhw",
+            authDomain: "sujaan-haat-ai.firebaseapp.com",
+            projectId: "sujaan-haat-ai",
+            storageBucket: "sujaan-haat-ai.appspot.com",
+            messagingSenderId: "your-messaging-sender-id",
+            appId: "your-app-id"
+        };
+
+        // Header Component
+        function Header({ user, onLogin, onLogout }) {
+            return (
+                <header className="gradient-bg text-white shadow-lg">
+                    <div className="container mx-auto px-4 py-4">
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                                    <span className="text-purple-600 font-bold text-xl">A</span>
+                                </div>
+                                <h1 className="text-2xl font-bold">AI Artisan Marketplace</h1>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                {user ? (
+                                    <>
+                                        <span className="text-sm">Welcome, {user.email}</span>
+                                        <button 
+                                            onClick={onLogout}
+                                            className="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button 
+                                        onClick={onLogin}
+                                        className="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                    >
+                                        Login
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            );
+        }
+
+        // Product Card Component
+        function ProductCard({ product }) {
+            return (
+                <div className="card-hover bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="h-48 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                        <span className="text-white text-4xl">🎨</span>
+                    </div>
+                    <div className="p-4">
+                        <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                        <p className="text-gray-600 text-sm mb-3">{product.description}</p>
+                        <div className="flex justify-between items-center">
+                            <span className="text-2xl font-bold text-purple-600">${product.price}</span>
+                            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Login Modal Component
+        function LoginModal({ isOpen, onClose, onLogin, onRegister }) {
+            const [email, setEmail] = useState('test@example.com');
+            const [password, setPassword] = useState('password123');
+            const [isLogin, setIsLogin] = useState(true);
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+                        <h2 className="text-2xl font-bold mb-4 text-center">
+                            {isLogin ? 'Login' : 'Register'}
+                        </h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                            </div>
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={() => isLogin ? onLogin(email, password) : onRegister(email, password)}
+                                    className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+                                >
+                                    {isLogin ? 'Login' : 'Register'}
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                            <div className="text-center">
+                                <button
+                                    onClick={() => setIsLogin(!isLogin)}
+                                    className="text-purple-600 hover:text-purple-700 text-sm"
+                                >
+                                    {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [user, setUser] = useState(null);
+            const [showLogin, setShowLogin] = useState(false);
+            const [products, setProducts] = useState([
+                {
+                    id: 1,
+                    name: "Handmade Ceramic Vase",
+                    description: "Beautiful handcrafted ceramic vase with intricate patterns",
+                    price: 45,
+                    artisan: "Priya Sharma"
+                },
+                {
+                    id: 2,
+                    name: "Traditional Wooden Sculpture",
+                    description: "Exquisite wooden sculpture carved by master artisans",
+                    price: 120,
+                    artisan: "Raj Kumar"
+                },
+                {
+                    id: 3,
+                    name: "Embroidered Silk Scarf",
+                    description: "Luxurious silk scarf with traditional embroidery",
+                    price: 85,
+                    artisan: "Meera Patel"
+                },
+                {
+                    id: 4,
+                    name: "Copper Handicraft Bowl",
+                    description: "Elegant copper bowl with traditional Indian motifs",
+                    price: 65,
+                    artisan: "Vikram Singh"
+                }
+            ]);
+
+            const handleLogin = (email, password) => {
+                // Simulate login for now
+                setUser({ email: email, name: email.split('@')[0] });
+                setShowLogin(false);
+                alert('Login successful! (This is a demo - replace with real Firebase auth)');
+            };
+
+            const handleRegister = (email, password) => {
+                // Simulate registration for now
+                setUser({ email: email, name: email.split('@')[0] });
+                setShowLogin(false);
+                alert('Registration successful! (This is a demo - replace with real Firebase auth)');
+            };
+
+            const handleLogout = () => {
+                setUser(null);
+            };
+
+            return (
+                <div className="min-h-screen">
+                    <Header user={user} onLogin={() => setShowLogin(true)} onLogout={handleLogout} />
+                    
+                    <main className="container mx-auto px-4 py-8">
+                        {/* Hero Section */}
+                        <section className="text-center mb-12">
+                            <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                                Discover Unique Handmade Artisans
+                            </h2>
+                            <p className="text-xl text-gray-600 mb-8">
+                                Connect with local artisans and discover one-of-a-kind handmade products
+                            </p>
+                            <div className="flex justify-center space-x-4">
+                                <button className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                                    Browse Products
+                                </button>
+                                <button className="border-2 border-purple-600 text-purple-600 px-6 py-3 rounded-lg hover:bg-purple-600 hover:text-white transition-colors">
+                                    Become an Artisan
+                                </button>
+                            </div>
+                        </section>
+
+                        {/* Featured Products */}
+                        <section>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-6">Featured Products</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {products.map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* AI Assistant Section */}
+                        <section className="mt-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-8 text-white text-center">
+                            <h3 className="text-3xl font-bold mb-4">AI-Powered Assistant</h3>
+                            <p className="text-xl mb-6">Get personalized recommendations and market insights</p>
+                            <button className="bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                                Try Voice Assistant
+                            </button>
+                        </section>
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-gray-800 text-white py-8 mt-16">
+                        <div className="container mx-auto px-4 text-center">
+                            <p>&copy; 2024 AI Artisan Marketplace. All rights reserved.</p>
+                        </div>
+                    </footer>
+
+                    <LoginModal 
+                        isOpen={showLogin}
+                        onClose={() => setShowLogin(false)}
+                        onLogin={handleLogin}
+                        onRegister={handleRegister}
+                    />
+                </div>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

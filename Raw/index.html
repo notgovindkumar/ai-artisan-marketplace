@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spark Landing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+      overflow-x: hidden;
+    }
+    .hero {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-title {
+      font-size: 3em;
+      letter-spacing: 2px;
+      animation: glow 2s infinite alternate;
+    }
+    .hero-desc {
+      font-size: 1.2em;
+      margin: 15px 0 30px 0;
+      opacity: 0.87;
+    }
+    .cta-btn {
+      padding: 16px 48px;
+      background: #36d1c4;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.3em;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(54,209,196,0.2);
+      transition: background 0.3s;
+    }
+    .cta-btn:hover {
+      background: #2193b0;
+    }
+    .wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 110%;
+      height: 230px;
+      background: url('https://svgshare.com/i/vPj.svg');
+      animation: waveMove 8s linear infinite;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 30px #36d1c4; }
+      to { text-shadow: 0 0 60px #2193b0; }
+    }
+    @keyframes waveMove {
+      from { left: -10%; }
+      to { left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-title">Welcome to Spark</div>
+    <div class="hero-desc">A creative landing page with animated flair.</div>
+    <button class="cta-btn">Get Started</button>
+    <div class="wave"></div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test - AI Artisan Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .firebase-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Integration Test</h1>
+        <h2>AI Artisan Marketplace</h2>
+        
+        <div id="firebase-status" class="firebase-status info">
+            Initializing Firebase...
+        </div>
+
+        <h3>Authentication Test</h3>
+        <div>
+            <input type="email" id="email" placeholder="Email" value="test@example.com">
+            <input type="password" id="password" placeholder="Password" value="password123">
+            <button onclick="registerUser()">Register</button>
+            <button onclick="loginUser()">Login</button>
+            <button onclick="logoutUser()">Logout</button>
+        </div>
+
+        <div id="user-info"></div>
+
+        <h3>Firestore Test</h3>
+        <div>
+            <input type="text" id="product-name" placeholder="Product Name" value="Test Product">
+            <button onclick="addProduct()">Add Product</button>
+            <button onclick="getProducts()">Get Products</button>
+        </div>
+
+        <div id="products-list"></div>
+
+        <h3>Instructions</h3>
+        <ol>
+            <li>Replace the Firebase config below with your actual config</li>
+            <li>Enable Authentication in Firebase Console</li>
+            <li>Create a Firestore database</li>
+            <li>Test the functions above</li>
+        </ol>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration - REPLACE WITH YOUR ACTUAL CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUix4R-Ur4sU-ykqdNK-74Va2rfreLHhw",
+            authDomain: "sujaan-haat-ai.firebaseapp.com",
+            projectId: "sujaan-haat-ai",
+            storageBucket: "sujaan-haat-ai.appspot.com",
+            messagingSenderId: "your-messaging-sender-id",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Check Firebase status
+        document.getElementById('firebase-status').innerHTML = '✅ Firebase initialized successfully!';
+        document.getElementById('firebase-status').className = 'firebase-status success';
+
+        // Make functions global
+        window.registerUser = async () => {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log('User registered:', userCredential.user);
+                alert('User registered successfully!');
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed: ' + error.message);
+            }
+        };
+
+        window.loginUser = async () => {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log('User logged in:', userCredential.user);
+                alert('Login successful!');
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed: ' + error.message);
+            }
+        };
+
+        window.logoutUser = async () => {
+            try {
+                await signOut(auth);
+                console.log('User logged out');
+                alert('Logout successful!');
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed: ' + error.message);
+            }
+        };
+
+        window.addProduct = async () => {
+            try {
+                const productName = document.getElementById('product-name').value;
+                const docRef = await addDoc(collection(db, 'products'), {
+                    name: productName,
+                    createdAt: new Date(),
+                    price: Math.floor(Math.random() * 1000) + 100
+                });
+                console.log('Product added:', docRef.id);
+                alert('Product added successfully!');
+            } catch (error) {
+                console.error('Add product error:', error);
+                alert('Add product failed: ' + error.message);
+            }
+        };
+
+        window.getProducts = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'products'));
+                const products = [];
+                querySnapshot.forEach((doc) => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+                console.log('Products:', products);
+                document.getElementById('products-list').innerHTML = 
+                    '<h4>Products:</h4><pre>' + JSON.stringify(products, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Get products error:', error);
+                alert('Get products failed: ' + error.message);
+            }
+        };
+
+        // Monitor auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('user-info').innerHTML = 
+                    `<div class="firebase-status success">✅ Logged in as: ${user.email}</div>`;
+            } else {
+                document.getElementById('user-info').innerHTML = 
+                    `<div class="firebase-status info">ℹ️ Not logged in</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
