@@ -1,0 +1,15 @@
+{
+  "name": "ai-artisan-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd server && npm install && npm run build && cd ../client && npm install && npm run build",
+    "start": "concurrently \"cd server && npm start\" \"cd client && npm start\""
+  },
+  "dependencies": {
+    // maybe some shared ones or leave minimal
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  }
+}
